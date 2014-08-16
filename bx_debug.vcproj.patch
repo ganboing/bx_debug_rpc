@@ -1,0 +1,17 @@
+--- ../../bochs_REL_2_6_6_FINAL/vs2008/bx_debug.vcproj	Mon Jun  9 20:22:50 2014
++++ ../../../../FtpUsr/FtpRoot/vs2008/bx_debug.vcproj	Sat Aug 16 20:33:41 2014
+@@ -175,6 +175,14 @@
+ 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+ 			>
+ 			<File
++				RelativePath="..\bx_debug_rpc\BochsDbg_s.c"
++				>
++			</File>
++			<File
++				RelativePath="..\bx_debug_rpc\BochsDbgServer.cpp"
++				>
++			</File>
++			<File
+ 				RelativePath="..\bx_debug\dbg_main.cc"
+ 				>
+ 				<FileConfiguration
