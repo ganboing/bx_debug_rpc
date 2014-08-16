@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include <cstdlib>
-#include <stdint.h>
 
 class SpinLock{
 private:
