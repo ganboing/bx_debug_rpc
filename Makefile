@@ -1,3 +1,7 @@
+.PHONY: all
+
+all: ../vs2008/bochs.vcproj ../vs2008/bx_debug.vcproj ../bx_debug/dbg_main.cc BochsDbg_s.c ../bxversion.h ../bxversion.rc ../config.h ../ltdlconf.h
+
 ../vs2008/bochs.vcproj: bochs.vcproj.patch
 	patch ../vs2008/bochs.vcproj < bochs.vcproj.patch
 
@@ -19,5 +23,5 @@ BochsDbg_s.c: BochsDbg.idl
 ../config.h:
 	cp config.h ../config.h
 
-../bxversion.rc:
+../ltdlconf.h:
 	cp ltdlconf.h ../ltdlconf.h
