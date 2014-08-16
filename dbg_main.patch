@@ -1,0 +1,135 @@
+--- ../../bochs_REL_2_6_6_FINAL/bx_debug/dbg_main.cc	Sat Aug 16 17:58:42 2014
++++ ../bx_debug/dbg_main.cc	Sat Aug 16 17:51:20 2014
+@@ -31,6 +31,51 @@
+ #if BX_DEBUGGER
+ 
+ #include "disasm/disasm.h"
++#include "../bx_debug_rpc/RpcShared.h"
++
++TaskQueue<WorkerParamPack> WorkerList;
++ManagedHANDLE WorkingItemReadyEvent(CreateEvent(NULL, FALSE, FALSE, NULL));
++
++static void DispatchWorker(PCmdWorkItem CurrentItem)
++{
++	CurrentItem->data.Status = 0;
++	CurrentItem->data.pWorker(CurrentItem->data.pParam, CurrentItem->data.hCompletionEvent);
++}
++
++static void CancelWorker(PCmdWorkItem CurrentItem)
++{
++	CurrentItem->data.Status = RPC_S_CALL_FAILED;
++	SetEvent(CurrentItem->data.hCompletionEvent);
++}
++
++void Bochs_PauseSimulationImpl()
++{
++	bx_debug_break();
++}
++
++void Bochs_ResumeSimulationImpl(PVOID, HANDLE hEvent)
++{
++	SetEvent(hEvent);
++	bx_dbg_continue_command();
++}
++
++void Bochs_ReadLinearMemoryImpl(PVOID _para, HANDLE hEvent)
++{
++	PReadMemoryParas para = (PReadMemoryParas)_para;
++	para->Status = bx_dbg_read_linear(dbg_cpu, para->StartAddr, para->Length, para->Buffer);
++	SetEvent(hEvent);
++}
++
++void Bochs_WaitForIdleImpl(PVOID, HANDLE hEvent)
++{
++	SetEvent(hEvent);
++}
++
++void Bochs_QuitSimulationImpl(PVOID, HANDLE hEvent)
++{
++	StopRpcServer();
++	SetEvent(hEvent);
++}
+ 
+ #define LOG_THIS genlog->
+ 
+@@ -310,58 +355,34 @@
+ 
+ void bx_dbg_user_input_loop(void)
+ {
+-  int reti;
+-  unsigned include_cmd_len = strlen(BX_INCLUDE_CMD);
++  //Register RPC interfaces and Start Listening
++  HANDLE hRpcListeningThread = StartRpcServer();
+ 
+   while(1) {
+     SIM->refresh_ci();
+     SIM->set_display_mode(DISP_MODE_CONFIG);
+     SIM->get_param_bool(BXPN_MOUSE_ENABLED)->set(0);
+-    bx_get_command();
+-reparse:
+-    if ((*tmp_buf_ptr == '\n') || (*tmp_buf_ptr == 0))
+-    {
+-        if ((*tmp_buf_prev != '\n') && (*tmp_buf_prev != 0)) {
+-          strncpy(tmp_buf, tmp_buf_prev, sizeof(tmp_buf_prev));
+-          goto reparse;
+-        }
+-    }
+-    else if ((strncmp(tmp_buf_ptr, BX_INCLUDE_CMD, include_cmd_len) == 0) &&
+-              (tmp_buf_ptr[include_cmd_len] == ' ' ||
+-               tmp_buf_ptr[include_cmd_len] == '\t'))
+-    {
+-      char *ptr = tmp_buf_ptr + include_cmd_len + 1;
+-      while(*ptr==' ' || *ptr=='\t')
+-        ptr++;
+-
+-      int len = strlen(ptr);
+-      if (len == 0) {
+-        dbg_printf("%s: no filename given to 'source' command.\n", argv0);
+-        if (bx_infile_stack_index > 0) {
+-          dbg_printf("%s: ERROR in source file causes exit.\n", argv0);
+-          bx_dbg_exit(1);
+-        }
+-        continue;
+-      }
+-      ptr[len-1] = 0; // get rid of newline
+-      reti = bx_nest_infile(ptr);
+-      if (reti==0 && bx_infile_stack_index > 0) {
+-        dbg_printf("%s: ERROR in source file causes exit.\n", argv0);
+-        bx_dbg_exit(1);
+-      }
+-    }
+-    else {
+-      // Give a chance to the command line extensions, to
+-      // consume the command.  If they return 0, then
+-      // we need to process the command.  A return of 1
+-      // means, the extensions have handled the command
+-      if (bx_dbg_extensions(tmp_buf_ptr)==0) {
+-        // process command here
+-        bx_add_lex_input(tmp_buf_ptr);
+-        bxparse();
+-      }
+-    }
++	PCmdWorkItem NewItem;
++	if(WorkerList.IsShutDown())
++	{
++		while((NewItem = WorkerList.Pop())!=NULL){
++			CancelWorker(NewItem);
++		}
++		break;
++	}
++	NewItem = WorkerList.Pop();
++	if(NewItem != NULL)
++	{
++		DispatchWorker(NewItem);
++	}
++	else
++	{
++		WaitForSingleObject(WorkingItemReadyEvent.get(), INFINITE);
++	}
+   }
++  WaitForSingleObject(hRpcListeningThread, INFINITE);
++  CloseHandle(hRpcListeningThread);
++  bx_dbg_quit_command();
+ }
+ 
+ void bx_get_command(void)
