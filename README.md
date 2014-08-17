@@ -8,6 +8,7 @@ The project is synced with bochs REL_2_6_6.
 Prerequsite:
 
 Source code of Bochs REL_2_6_6. (Checked out from Bochs SVN)
+
 A working bash shell on Windows. (See Bochs notes of "Compiling on Win32").
 
 Setup the build environment:
