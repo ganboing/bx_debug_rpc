@@ -7,6 +7,7 @@ interface BochsDebug
 void Bochs_PauseSimulation([in] handle_t h1);
 void Bochs_ResumeSimulation([in] handle_t h1);
 void Bochs_QuitSimulation([in] handle_t h1);
-error_status_t Bochs_ReadLinearMemory([in] handle_t h1, [in] __int64 StartAddr, [in] __int32 Length, [out, size_is(Length)] byte Buffer[]);
+error_status_t Bochs_ReadLinearMemory([in] handle_t h1, [in] unsigned __int64 StartAddr, [in] unsigned __int32 Length, [out, ref, size_is(Length)] byte Buffer[]);
+error_status_t Bochs_ReadPhysicalMemory([in] handle_t h1, [in] unsigned __int64 StartAddr, [in] unsigned __int32 Length, [out, ref, size_is(Length)] byte Buffer[]);
 void Bochs_WaitForIdle([in] handle_t h1);
 }
