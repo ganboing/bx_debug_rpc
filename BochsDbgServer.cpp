@@ -4,6 +4,10 @@
 #include "RpcShared.h"
 #include "../bx_debug/debug.h"
 
+#if BX_SUPPORT_SMP
+#error "Bochs should be configured in non-SMP mode to allow rpc debug"
+#endif
+
 static DWORD WINAPI RpcListeningThread(LPVOID)
 {
 	return RpcServerListen(1,RPC_C_LISTEN_MAX_CALLS_DEFAULT,0);
