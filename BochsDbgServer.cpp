@@ -8,6 +8,10 @@
 #error "Bochs should be configured in non-SMP mode to allow rpc debug"
 #endif
 
+#if BX_SUPPORT_X86_64
+#error "Bochs should be configured without x86_64 support"
+#endif
+
 static DWORD WINAPI RpcListeningThread(LPVOID)
 {
 	return RpcServerListen(1,RPC_C_LISTEN_MAX_CALLS_DEFAULT,0);
@@ -39,7 +43,7 @@ void CollectWorker(PWorkerProc proc, PVOID para)
 	NewItem.data.pParam = para;
 	NewItem.data.Status = 0;
 	__try{
-		if(!WorkerList.Push(&NewItem))
+		if(!WorkerList.Enqueue(&NewItem))
 		{
 			RaiseException(RPC_S_CALL_FAILED, EXCEPTION_NONCONTINUABLE , NULL, NULL);
 		}
@@ -77,10 +81,24 @@ extern "C"{
 		CollectWorker(Bochs_WaitForIdleImpl, NULL);
 	}
 
-	error_status_t Bochs_ReadLinearMemory(IN RPC_BINDING_HANDLE h1, __int64 StartAddr, __int32 Length, byte Buffer[  ])
+	error_status_t Bochs_ReadLinearMemory(IN RPC_BINDING_HANDLE h1, unsigned __int32 StartAddr, unsigned __int32 Length, byte Buffer[])
 	{
 		ReadMemoryParas para = {StartAddr, Length, Buffer};
 		CollectWorker(Bochs_ReadLinearMemoryImpl, &para);
+		return para.Status;
+	}
+
+	error_status_t Bochs_ReadPhysicalMemory(IN RPC_BINDING_HANDLE h1, unsigned __int32 StartAddr, unsigned __int32 Length, byte Buffer[])
+	{
+		ReadMemoryParas para = { StartAddr, Length, Buffer };
+		CollectWorker(Bochs_ReadPhysicalMemoryImpl, &para);
+		return para.Status;
+	}
+
+	error_status_t Bochs_GetGPRs(IN RPC_BINDING_HANDLE h1, PBochsGPRsContext context)
+	{
+		ReadGPRsParas para = { context };
+		CollectWorker(Bochs_GetGPRsImpl, &para);
 		return para.Status;
 	}
 

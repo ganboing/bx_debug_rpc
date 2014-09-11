@@ -11,11 +11,13 @@ public:
 	}
 	inline void Acquire() const
 	{
-		while(InterlockedCompareExchange(&lock, 1, 0)){}
+		while(InterlockedExchange(&lock, 1)){
+			Sleep(0);
+		}
 	}
 	inline void Release() const
 	{
-		lock = 0;
+		InterlockedExchange(&lock, 1);
 	}
 };
 
@@ -44,12 +46,13 @@ public:
 	void Shutdown()
 	{
 		shutdown = 1;
+		MemoryBarrier();
 	}
 	bool IsShutDown() const
 	{
 		return shutdown;
 	}
-	bool Push(PElementType pElement)
+	bool Enqueue(PElementType pElement)
 	{
 		if(!shutdown)
 		{
@@ -62,7 +65,7 @@ public:
 		}
 		return false;
 	}
-	PElementType Pop()
+	PElementType Dequeue()
 	{
 		lock.Acquire();
 		PElementType ret = NULL;

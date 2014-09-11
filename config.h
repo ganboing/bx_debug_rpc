@@ -108,15 +108,15 @@
 #define BX_CPU_LEVEL 6
 
 // emulate x86-64 instruction set?
-#define BX_SUPPORT_X86_64 1
+#define BX_SUPPORT_X86_64 0
 
 // emulate long physical address (>32 bit)
 #define BX_PHY_ADDRESS_LONG 1
 
-#define BX_HAVE_SLEEP 1
-#define BX_HAVE_MSLEEP 0
+#define BX_HAVE_SLEEP 0
+#define BX_HAVE_MSLEEP 1
 #define BX_HAVE_USLEEP 0
-#define BX_HAVE_NANOSLEEP 1
+#define BX_HAVE_NANOSLEEP 0
 #define BX_HAVE_ABORT 1
 #define BX_HAVE_SOCKLEN_T 0
 #define BX_HAVE_SOCKADDR_IN_SIN_LEN 0
@@ -129,7 +129,7 @@
 #define BX_HAVE_MKSTEMP 0
 #define BX_HAVE_SYS_MMAN_H 0
 #define BX_HAVE_XPM_H 0
-#define BX_HAVE_TIMELOCAL 1
+#define BX_HAVE_TIMELOCAL 0
 #define BX_HAVE_GMTIME 1
 #define BX_HAVE_MKTIME 1
 #define BX_HAVE_TMPFILE64 0
@@ -654,7 +654,7 @@ typedef
 #define BX_SUPPORT_3DNOW 0
 #define BX_SUPPORT_MONITOR_MWAIT 1
 #define BX_SUPPORT_SVM 0
-#define BX_SUPPORT_VMX 2
+#define BX_SUPPORT_VMX 0
 #define BX_SUPPORT_AVX 0
 #define BX_SUPPORT_EVEX 0
 
