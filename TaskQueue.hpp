@@ -37,22 +37,22 @@ private:
 	ListEntry* volatile* volatile tail;
 public:
 	typedef ListEntry ElementType, *PElementType;
-	TaskQueue()
+	TaskQueue() throw ()
 	{
 		head = NULL;
 		tail = &head;
 		shutdown = 0;
 	}
-	void Shutdown()
+	void Shutdown() throw()
 	{
 		shutdown = 1;
 		MemoryBarrier();
 	}
-	bool IsShutDown() const
+	bool IsShutDown() const throw()
 	{
 		return shutdown;
 	}
-	bool Enqueue(PElementType pElement)
+	bool Enqueue(PElementType pElement) throw()
 	{
 		if(!shutdown)
 		{
@@ -65,7 +65,7 @@ public:
 		}
 		return false;
 	}
-	PElementType Dequeue()
+	PElementType Dequeue() throw()
 	{
 		lock.Acquire();
 		PElementType ret = NULL;

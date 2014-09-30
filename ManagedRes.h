@@ -5,23 +5,23 @@ class ManagedHANDLE{
 private:
 	HANDLE h;
 public:
-	inline ManagedHANDLE():h(NULL)
+	inline ManagedHANDLE() throw ():h(NULL)
 	{
 	}
-	inline ManagedHANDLE(HANDLE p):h(p)
+	inline ManagedHANDLE(HANDLE p) throw () :h(p)
 	{
 	}
-	inline HANDLE get() const 
+	inline HANDLE get() const  throw ()
 	{
 		return h;
 	}
-	inline HANDLE release() 
+	inline HANDLE release()  throw ()
 	{
 		HANDLE ret = h;
 		h=NULL;
 		return ret;
 	}
-	inline ~ManagedHANDLE()
+	inline ~ManagedHANDLE() throw ()
 	{
 		if(h)
 		{
