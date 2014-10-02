@@ -1,0 +1,15 @@
+Index: bx_debug/debug.h
+===================================================================
+--- bx_debug/debug.h	(revision 12494)
++++ bx_debug/debug.h	(working copy)
+@@ -31,6 +31,10 @@
+ 
+ #if BX_DEBUGGER
+ 
++#ifdef WIN32
++extern bool bx_dbg_is_rpc_debugging;
++#endif
++
+ // some strict C declarations needed by the parser/lexer
+ #ifdef __cplusplus
+ extern "C" {

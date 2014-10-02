@@ -1,0 +1,141 @@
+Index: bx_debug/dbg_main.cc
+===================================================================
+--- bx_debug/dbg_main.cc	(revision 12494)
++++ bx_debug/dbg_main.cc	(working copy)
+@@ -31,6 +31,82 @@
+ #if BX_DEBUGGER
+ 
+ #include "disasm/disasm.h"
++#include "../bx_debug_rpc/RpcShared.h"
++
++TaskQueue<WorkerParamPack> WorkerList;
++ManagedHANDLE WorkingItemReadyEvent(CreateEvent(NULL, FALSE, FALSE, NULL));
++
++static void DispatchWorker(PCmdWorkItem CurrentItem)
++{
++	CurrentItem->data.Status = 0;
++	CurrentItem->data.pWorker(CurrentItem->data.pParam, CurrentItem->data.hCompletionEvent);
++}
++
++static void CancelWorker(PCmdWorkItem CurrentItem)
++{
++	CurrentItem->data.Status = RPC_S_CALL_FAILED;
++	SetEvent(CurrentItem->data.hCompletionEvent);
++}
++
++void Bochs_PauseSimulationImpl()
++{
++	bx_debug_break();
++}
++
++void Bochs_ResumeSimulationImpl(PVOID, HANDLE hEvent)
++{
++	SetEvent(hEvent);
++	bx_dbg_continue_command();
++}
++
++void Bochs_ReadLinearMemoryImpl(PVOID _para, HANDLE hEvent)
++{
++	PReadMemoryParas para = (PReadMemoryParas)_para;
++	para->Status = bx_dbg_read_linear(dbg_cpu, para->StartAddr, para->Length, para->Buffer);
++	SetEvent(hEvent);
++}
++
++void Bochs_ReadPhysicalMemoryImpl(PVOID _para, HANDLE hEvent)
++{
++	PReadMemoryParas para = (PReadMemoryParas)_para;
++	para->Status = BX_MEM(0)->dbg_fetch_mem(BX_CPU(dbg_cpu), (bx_phy_address)para->StartAddr, para->Length, para->Buffer);
++	// 0 - error, 1 - success
++	SetEvent(hEvent);
++}
++
++void Bochs_GetSegRegImpl(PVOID _para, HANDLE hEvent)
++{
++
++}
++
++void Bochs_GetGPRsImpl(PVOID _para, HANDLE hEvent)
++{
++	PReadGPRsParas para = (PReadGPRsParas)_para;
++	PBochsGPRsContext pContext = para->pContext;
++	pContext->EAX = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_EAX);
++	pContext->ECX = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_ECX);
++	pContext->EDX = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_EDX);
++	pContext->EBX = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_EBX);
++	pContext->ESP = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_ESP);
++	pContext->EBP = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_EBP);
++	pContext->ESI = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_ESI);
++	pContext->EDI = BX_CPU(dbg_cpu)->get_reg32(BX_32BIT_REG_EDI);
++	pContext->EIP = bx_dbg_get_instruction_pointer();
++	pContext->EFLAGS = BX_CPU(dbg_cpu)->read_eflags();
++	para->Status = 0;
++	SetEvent(hEvent);
++}
++
++void Bochs_WaitForIdleImpl(PVOID, HANDLE hEvent)
++{
++	SetEvent(hEvent);
++}
++
++void Bochs_QuitSimulationImpl(PVOID, HANDLE hEvent)
++{
++	StopRpcServer();
++	SetEvent(hEvent);
++}
+ 
+ #define LOG_THIS genlog->
+ 
+@@ -308,8 +384,15 @@
+   bxparse();
+ }
+ 
++bool bx_dbg_is_rpc_debugging;
++void bx_dbg_rpc_loop(void);
++
+ void bx_dbg_user_input_loop(void)
+ {
++  if(bx_dbg_is_rpc_debugging)
++  {
++	return bx_dbg_rpc_loop();
++  }
+   int reti;
+   unsigned include_cmd_len = strlen(BX_INCLUDE_CMD);
+ 
+@@ -364,6 +447,37 @@
+   }
+ }
+ 
++void bx_dbg_rpc_loop(void)
++{
++  //Register RPC interfaces and Start Listening
++  HANDLE hRpcListeningThread = StartRpcServer();
++  while(1) {
++    SIM->refresh_ci();
++    SIM->set_display_mode(DISP_MODE_CONFIG);
++    SIM->get_param_bool(BXPN_MOUSE_ENABLED)->set(0);
++	PCmdWorkItem NewItem;
++	if(WorkerList.IsShutDown())
++	{
++		while((NewItem = WorkerList.Dequeue())!=NULL){
++			CancelWorker(NewItem);
++		}
++		break;
++	}
++	NewItem = WorkerList.Dequeue();
++	if(NewItem != NULL)
++	{
++		DispatchWorker(NewItem);
++	}
++	else
++	{
++		WaitForSingleObject(WorkingItemReadyEvent.get(), INFINITE);
++	}
++  }
++  WaitForSingleObject(hRpcListeningThread, INFINITE);
++  CloseHandle(hRpcListeningThread);
++  bx_dbg_quit_command();
++}
++
+ void bx_get_command(void)
+ {
+   char *charptr_ret;
