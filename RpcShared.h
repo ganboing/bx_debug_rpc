@@ -2,7 +2,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "BochsDbg.h"
+#include "../bx_debug/rpc_gen/BochsRpcDbg.h"
 #ifdef __cplusplus
 }
 #endif

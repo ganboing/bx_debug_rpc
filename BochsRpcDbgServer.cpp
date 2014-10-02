@@ -8,9 +8,9 @@
 #error "Bochs should be configured in non-SMP mode to allow rpc debug"
 #endif
 
-#if BX_SUPPORT_X86_64
+/*#if BX_SUPPORT_X86_64
 #error "Bochs should be configured without x86_64 support"
-#endif
+#endif*/
 
 static DWORD WINAPI RpcListeningThread(LPVOID)
 {
