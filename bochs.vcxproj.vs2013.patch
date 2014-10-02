@@ -1,0 +1,28 @@
+--- /c/Users/PROGMAN/Downloads/vs2013/bochs.vcxproj	Fri Jul 11 13:08:06 2014
++++ bochs.vcxproj	Thu Oct  2 17:01:06 2014
+@@ -51,6 +51,7 @@
+     <OutDir>.\..\obj-release\</OutDir>
+     <IntDir>.\..\obj-release\</IntDir>
+     <LinkIncremental>false</LinkIncremental>
++    <GenerateManifest>false</GenerateManifest>
+   </PropertyGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+     <BuildLog>
+@@ -78,7 +79,7 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+     <Link>
+-      <AdditionalDependencies>winmm.lib;comctl32.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>winmm.lib;comctl32.lib;ws2_32.lib;iphlpapi.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <OutputFile>.\..\obj-debug\bochs.exe</OutputFile>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <GenerateDebugInformation>true</GenerateDebugInformation>
+@@ -122,7 +123,7 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+     <Link>
+-      <AdditionalDependencies>winmm.lib;comctl32.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>winmm.lib;comctl32.lib;ws2_32.lib;iphlpapi.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <OutputFile>.\..\obj-release\bochs.exe</OutputFile>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <GenerateDebugInformation>true</GenerateDebugInformation>

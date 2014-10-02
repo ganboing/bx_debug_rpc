@@ -1,13 +1,13 @@
 29a30
-> 				CommandLine="midl /client none /out $(SolutionDir)\..\bx_debug_rpc $(SolutionDir)\..\bx_debug_rpc\BochsDbg.idl"
+> 				CommandLine="midl /client none /out $(SolutionDir)\..\bx_debug\rpc_gen $(SolutionDir)\..\bx_debug_rpc\BochsRpcDbg.idl"
 103a105
-> 				CommandLine="midl /client none /out $(SolutionDir)\..\bx_debug_rpc $(SolutionDir)\..\bx_debug_rpc\BochsDbg.idl"
+> 				CommandLine="midl /client none /out $(SolutionDir)\..\bx_debug\rpc_gen $(SolutionDir)\..\bx_debug_rpc\BochsRpcDbg.idl"
 176a179,186
 > 			<File
-> 				RelativePath="..\bx_debug_rpc\BochsDbg_s.c"
+> 				RelativePath="..\bx_debug\rpc_gen\BochsRpcDbg_s.c"
 > 				>
 > 			</File>
 > 			<File
-> 				RelativePath="..\bx_debug_rpc\BochsDbgServer.cpp"
+> 				RelativePath="..\bx_debug_rpc\BochsRpcDbgServer.cpp"
 > 				>
 > 			</File>
