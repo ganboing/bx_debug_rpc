@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Dec 25 09:27:30 2014
+/* at Fri Dec 26 22:15:00 2014
  */
 /* Compiler settings for C:\Users\PROGMAN\workspace\bochs_trunk\vs2013\\..\bx_debug_rpc\BochsRpcDbg.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -54,15 +54,23 @@ extern "C"{
 
 typedef struct _BochsGPRsContext
     {
-    unsigned __int32 EAX;
-    unsigned __int32 ECX;
-    unsigned __int32 EDX;
-    unsigned __int32 EBX;
-    unsigned __int32 ESP;
-    unsigned __int32 EBP;
-    unsigned __int32 ESI;
-    unsigned __int32 EDI;
-    unsigned __int32 EIP;
+    unsigned __int64 RAX;
+    unsigned __int64 RCX;
+    unsigned __int64 RDX;
+    unsigned __int64 RBX;
+    unsigned __int64 RSP;
+    unsigned __int64 RBP;
+    unsigned __int64 RSI;
+    unsigned __int64 RDI;
+    unsigned __int64 R8;
+    unsigned __int64 R9;
+    unsigned __int64 R10;
+    unsigned __int64 R11;
+    unsigned __int64 R12;
+    unsigned __int64 R13;
+    unsigned __int64 R14;
+    unsigned __int64 R15;
+    unsigned __int64 RIP;
     unsigned __int32 EFLAGS;
     } 	BochsGPRsContext;
 
@@ -77,22 +85,25 @@ void Bochs_ResumeSimulation(
 void Bochs_QuitSimulation( 
     /* [in] */ handle_t h1);
 
-error_status_t Bochs_ReadLinearMemory( 
+boolean Bochs_ReadLinearMemory( 
     /* [in] */ handle_t h1,
-    /* [in] */ unsigned __int32 StartAddr,
+    /* [in] */ unsigned __int64 StartAddr,
     /* [in] */ unsigned __int32 Length,
     /* [size_is][ref][out] */ byte Buffer[  ]);
 
-error_status_t Bochs_ReadPhysicalMemory( 
+boolean Bochs_ReadPhysicalMemory( 
     /* [in] */ handle_t h1,
-    /* [in] */ unsigned __int32 StartAddr,
+    /* [in] */ unsigned __int64 StartAddr,
     /* [in] */ unsigned __int32 Length,
     /* [size_is][ref][out] */ byte Buffer[  ]);
 
 void Bochs_WaitForIdle( 
     /* [in] */ handle_t h1);
 
-error_status_t Bochs_GetGPRs( 
+void Bochs_PrintRegs( 
+    /* [in] */ handle_t h1);
+
+void Bochs_GetGPRs( 
     /* [in] */ handle_t h1,
     /* [ref][out] */ PBochsGPRsContext context);
 

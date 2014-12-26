@@ -1,84 +1,101 @@
 #pragma once
-#include <Windows.h>
-#include <cstdlib>
+#include <atomic>
+#include <algorithm>
+//#include <mutex>
 
-class SpinLock{
+template<class T, size_t S>
+class TaskQueue{
 private:
-	volatile mutable LONG lock;
+	T* data[S];
+	::std::atomic_size_t p_reserve;
+	::std::atomic_size_t p_commit;
+	::std::atomic_size_t p_free;
+	/*
+		[--free--|--commit--|--reserved--]
+		         |          |            |
+				p_f        p_c          p_r
+	*/
 public:
-	inline SpinLock(){
-		lock = 0;
-	}
-	inline void Acquire() const
+	TaskQueue()
 	{
-		while(InterlockedExchange(&lock, 1)){
-			Sleep(0);
+		::std::fill(data, data + S, nullptr);
+	}
+	bool Enqueue(T* newdata)
+	{
+		size_t p_r_old = p_reserve.load();
+		size_t p_r_new;
+		do{
+			p_r_new = (p_r_old + 1) % S;
+			if (p_r_new == p_free.load())
+			{
+				return false;
+			}
+		} while (!p_reserve.compare_exchange_strong(p_r_old, p_r_new));
+		data[p_r_old] = newdata;
+		while (p_commit.load() != p_r_old);
+		p_commit.store(p_r_new);
+		return true;
+	}
+	T* Dequeue()
+	{
+		size_t p_f = p_free.load();
+		if (p_f == p_commit.load())
+		{
+			return nullptr;
 		}
-	}
-	inline void Release() const
-	{
-		InterlockedExchange(&lock, 1);
+		p_free.store((p_f + 1) % S);
+		return data[p_f];
 	}
 };
 
-template<class T>
+/*template<class T>
 class TaskQueue{
 private:
-	SpinLock lock;
-	volatile bool shutdown;
-	class ListEntry;
-	struct EntryHeader{
-		ListEntry* volatile next;
-	};
-	struct ListEntry : EntryHeader{
-		T data;
-	};
-	ListEntry* volatile head;
-	ListEntry* volatile* volatile tail;
+	T*  head;
+	T** tail;
+	::std::atomic_bool shutdown;
+	::std::mutex mut;
 public:
-	typedef ListEntry ElementType, *PElementType;
-	TaskQueue() throw ()
+	typedef T ElementType, *PElementType;
+	TaskQueue()
+		: head(nullptr), tail(&head)
 	{
-		head = NULL;
-		tail = &head;
-		shutdown = 0;
 	}
-	void Shutdown() throw()
+	void Shutdown()
 	{
-		shutdown = 1;
-		MemoryBarrier();
+		shutdown.store(true);
 	}
-	bool IsShutDown() const throw()
+	bool IsShutDown() const
 	{
-		return shutdown;
+		return shutdown.load();
 	}
-	bool Enqueue(PElementType pElement) throw()
+	bool Enqueue(PElementType pElement)
 	{
-		if(!shutdown)
+		if(!shutdown.load())
 		{
-			lock.Acquire();
+			::std::lock_guard<::std::mutex> lock(mut);
 			*tail = pElement;
-			pElement->next = NULL;
-			tail = &(pElement->next);
-			lock.Release();
+			tail = &pElement->next;
 			return true;
 		}
 		return false;
 	}
-	PElementType Dequeue() throw()
+	PElementType Dequeue()
 	{
-		lock.Acquire();
-		PElementType ret = NULL;
-		if(head != NULL)
+		PElementType ret = nullptr;
+		::std::lock_guard<::std::mutex> lock(mut);
+		if(&head != tail)
 		{
 			ret = head;
-			head = head->next;
-			if(head == NULL)
+			if(tail == &head->next)
 			{
 				tail = &head;
 			}
+			else
+			{
+				head = head->next;
+			}
 		}
-		lock.Release();
 		return ret;
 	}
-};
+};*/

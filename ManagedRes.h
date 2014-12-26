@@ -1,31 +1,13 @@
 #pragma once
 #include <Windows.h>
+#include <memory>
 
-class ManagedHANDLE{
-private:
-	HANDLE h;
+class _HANDLE_Deleter{
 public:
-	inline ManagedHANDLE() throw ():h(NULL)
+	inline void operator() (void* p)
 	{
-	}
-	inline ManagedHANDLE(HANDLE p) throw () :h(p)
-	{
-	}
-	inline HANDLE get() const  throw ()
-	{
-		return h;
-	}
-	inline HANDLE release()  throw ()
-	{
-		HANDLE ret = h;
-		h=NULL;
-		return ret;
-	}
-	inline ~ManagedHANDLE() throw ()
-	{
-		if(h)
-		{
-			CloseHandle(h);
-		}
+		CloseHandle(p);
 	}
 };
+
+typedef ::std::unique_ptr<void, _HANDLE_Deleter> ManagedHANDLE;

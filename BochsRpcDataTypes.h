@@ -1,0 +1,20 @@
+typedef struct _BochsGPRsContext{
+	unsigned __int64 RAX;
+	unsigned __int64 RCX;
+	unsigned __int64 RDX;
+	unsigned __int64 RBX;
+	unsigned __int64 RSP;
+	unsigned __int64 RBP;
+	unsigned __int64 RSI;
+	unsigned __int64 RDI;
+	unsigned __int64 R8;
+	unsigned __int64 R9;
+	unsigned __int64 R10;
+	unsigned __int64 R11;
+	unsigned __int64 R12;
+	unsigned __int64 R13;
+	unsigned __int64 R14;
+	unsigned __int64 R15;
+	unsigned __int64 RIP;
+	unsigned __int32 EFLAGS;
+}BochsGPRsContext, *PBochsGPRsContext;

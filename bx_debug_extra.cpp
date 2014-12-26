@@ -1,6 +1,15 @@
 #include "bochs.h"
 #include "cpu/cpu.h"
 #include "bx_debug/debug.h"
+#include "bx_debug_rpc/BochsRpcDataTypes.h"
+
+#if BX_SUPPORT_SMP
+#error "Bochs should be configured in non-SMP mode to allow rpc debug"
+#endif
+
+#if !BX_SUPPORT_X86_64
+#error "Currently rpc debug assumes x86_64 arch"
+#endif
 
 #define STR(v) #v
 #define TOSTR(v) STR(v)
@@ -8,6 +17,43 @@
 
 void bx_rpc_get_command();
 extern bool bx_rpc_debugging;
+
+bool bx_dbg_rpc_read_linear(unsigned __int64 addr, unsigned __int32 len, unsigned char* buf)
+{
+	return !!bx_dbg_read_linear(dbg_cpu, addr, len, buf);
+}
+
+bool bx_dbg_rpc_read_physical(unsigned __int64 addr, unsigned __int32 len, unsigned char* buf)
+{
+	return !!BX_MEM(0)->dbg_fetch_mem(BX_CPU(dbg_cpu), (bx_phy_address)addr, len, buf);
+}
+
+void bx_dbg_rpc_print_reg()
+{
+	bx_dbg_info_registers_command(BX_INFO_GENERAL_PURPOSE_REGS);
+}
+
+void bx_dbg_rpc_read_gprs(PBochsGPRsContext pContext)
+{
+	pContext->RAX = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RAX);
+	pContext->RCX = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RCX);
+	pContext->RDX = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RDX);
+	pContext->RBX = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RBX);
+	pContext->RSP = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RSP);
+	pContext->RBP = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RBP);
+	pContext->RSI = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RSI);
+	pContext->RDI = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_RDI);
+	pContext->R8 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R8);
+	pContext->R9 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R9);
+	pContext->R10 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R10);
+	pContext->R11 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R11);
+	pContext->R12 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R12);
+	pContext->R13 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R13);
+	pContext->R14 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R14);
+	pContext->R15 = BX_CPU(dbg_cpu)->get_reg64(BX_64BIT_REG_R15);
+	pContext->RIP = bx_dbg_get_instruction_pointer();
+	pContext->EFLAGS = BX_CPU(dbg_cpu)->read_eflags();
+}
 
 static void print_char(char c)
 {

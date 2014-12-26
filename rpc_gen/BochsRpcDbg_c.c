@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Dec 25 09:27:30 2014
+/* at Fri Dec 26 22:15:00 2014
  */
 /* Compiler settings for C:\Users\PROGMAN\workspace\bochs_trunk\vs2013\\..\bx_debug_rpc\BochsRpcDbg.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -35,8 +35,8 @@
 
 #include "BochsRpcDbg.h"
 
-#define TYPE_FORMAT_STRING_SIZE   35                                
-#define PROC_FORMAT_STRING_SIZE   257                               
+#define TYPE_FORMAT_STRING_SIZE   47                                
+#define PROC_FORMAT_STRING_SIZE   279                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -131,9 +131,9 @@ void Bochs_QuitSimulation(
 }
 
 
-error_status_t Bochs_ReadLinearMemory( 
+boolean Bochs_ReadLinearMemory( 
     /* [in] */ handle_t h1,
-    /* [in] */ unsigned __int32 StartAddr,
+    /* [in] */ unsigned __int64 StartAddr,
     /* [in] */ unsigned __int32 Length,
     /* [size_is][ref][out] */ byte Buffer[  ])
 {
@@ -144,14 +144,14 @@ error_status_t Bochs_ReadLinearMemory(
                   ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
                   (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[84],
                   ( unsigned char * )&h1);
-    return ( error_status_t  )_RetVal.Simple;
+    return ( boolean  )_RetVal.Simple;
     
 }
 
 
-error_status_t Bochs_ReadPhysicalMemory( 
+boolean Bochs_ReadPhysicalMemory( 
     /* [in] */ handle_t h1,
-    /* [in] */ unsigned __int32 StartAddr,
+    /* [in] */ unsigned __int64 StartAddr,
     /* [in] */ unsigned __int32 Length,
     /* [size_is][ref][out] */ byte Buffer[  ])
 {
@@ -162,7 +162,7 @@ error_status_t Bochs_ReadPhysicalMemory(
                   ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
                   (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[136],
                   ( unsigned char * )&h1);
-    return ( error_status_t  )_RetVal.Simple;
+    return ( boolean  )_RetVal.Simple;
     
 }
 
@@ -179,18 +179,27 @@ void Bochs_WaitForIdle(
 }
 
 
-error_status_t Bochs_GetGPRs( 
+void Bochs_PrintRegs( 
+    /* [in] */ handle_t h1)
+{
+
+    NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
+                  (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[216],
+                  ( unsigned char * )&h1);
+    
+}
+
+
+void Bochs_GetGPRs( 
     /* [in] */ handle_t h1,
     /* [ref][out] */ PBochsGPRsContext context)
 {
 
-    CLIENT_CALL_RETURN _RetVal;
-
-    _RetVal = NdrClientCall2(
+    NdrClientCall2(
                   ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
-                  (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[216],
+                  (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[244],
                   ( unsigned char * )&h1);
-    return ( error_status_t  )_RetVal.Simple;
     
 }
 
@@ -287,12 +296,12 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 			0x48,		/* Old Flags:  */
 /* 86 */	NdrFcLong( 0x0 ),	/* 0 */
 /* 90 */	NdrFcShort( 0x3 ),	/* 3 */
-/* 92 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 92 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
 /* 94 */	0x32,		/* FC_BIND_PRIMITIVE */
 			0x0,		/* 0 */
 /* 96 */	NdrFcShort( 0x0 ),	/* x86 Stack size/offset = 0 */
-/* 98 */	NdrFcShort( 0x10 ),	/* 16 */
-/* 100 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 98 */	NdrFcShort( 0x18 ),	/* 24 */
+/* 100 */	NdrFcShort( 0x5 ),	/* 5 */
 /* 102 */	0x45,		/* Oi2 Flags:  srv must size, has return, has ext, */
 			0x4,		/* 4 */
 /* 104 */	0x8,		/* 8 */
@@ -305,27 +314,27 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 
 /* 112 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 114 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 116 */	0x8,		/* FC_LONG */
+/* 116 */	0xb,		/* FC_HYPER */
 			0x0,		/* 0 */
 
 	/* Parameter StartAddr */
 
 /* 118 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 120 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 120 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 122 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter Length */
 
 /* 124 */	NdrFcShort( 0x13 ),	/* Flags:  must size, must free, out, */
-/* 126 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 126 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
 /* 128 */	NdrFcShort( 0x2 ),	/* Type Offset=2 */
 
 	/* Parameter Buffer */
 
 /* 130 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 132 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 134 */	0x10,		/* FC_ERROR_STATUS_T */
+/* 132 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 134 */	0x3,		/* FC_SMALL */
 			0x0,		/* 0 */
 
 	/* Procedure Bochs_ReadPhysicalMemory */
@@ -337,12 +346,12 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 			0x48,		/* Old Flags:  */
 /* 138 */	NdrFcLong( 0x0 ),	/* 0 */
 /* 142 */	NdrFcShort( 0x4 ),	/* 4 */
-/* 144 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 144 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
 /* 146 */	0x32,		/* FC_BIND_PRIMITIVE */
 			0x0,		/* 0 */
 /* 148 */	NdrFcShort( 0x0 ),	/* x86 Stack size/offset = 0 */
-/* 150 */	NdrFcShort( 0x10 ),	/* 16 */
-/* 152 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 150 */	NdrFcShort( 0x18 ),	/* 24 */
+/* 152 */	NdrFcShort( 0x5 ),	/* 5 */
 /* 154 */	0x45,		/* Oi2 Flags:  srv must size, has return, has ext, */
 			0x4,		/* 4 */
 /* 156 */	0x8,		/* 8 */
@@ -355,27 +364,27 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 
 /* 164 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 166 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 168 */	0x8,		/* FC_LONG */
+/* 168 */	0xb,		/* FC_HYPER */
 			0x0,		/* 0 */
 
 	/* Parameter StartAddr */
 
 /* 170 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 172 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 172 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 174 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter Length */
 
 /* 176 */	NdrFcShort( 0x13 ),	/* Flags:  must size, must free, out, */
-/* 178 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 178 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
 /* 180 */	NdrFcShort( 0x2 ),	/* Type Offset=2 */
 
 	/* Parameter Buffer */
 
 /* 182 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 184 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 186 */	0x10,		/* FC_ERROR_STATUS_T */
+/* 184 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 186 */	0x3,		/* FC_SMALL */
 			0x0,		/* 0 */
 
 	/* Procedure Bochs_WaitForIdle */
@@ -401,7 +410,7 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 /* 212 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 214 */	NdrFcShort( 0x0 ),	/* 0 */
 
-	/* Procedure Bochs_GetGPRs */
+	/* Procedure Bochs_PrintRegs */
 
 
 	/* Parameter h1 */
@@ -410,32 +419,48 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 			0x48,		/* Old Flags:  */
 /* 218 */	NdrFcLong( 0x0 ),	/* 0 */
 /* 222 */	NdrFcShort( 0x6 ),	/* 6 */
-/* 224 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 224 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 226 */	0x32,		/* FC_BIND_PRIMITIVE */
 			0x0,		/* 0 */
 /* 228 */	NdrFcShort( 0x0 ),	/* x86 Stack size/offset = 0 */
 /* 230 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 232 */	NdrFcShort( 0x54 ),	/* 84 */
-/* 234 */	0x44,		/* Oi2 Flags:  has return, has ext, */
-			0x2,		/* 2 */
+/* 232 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 234 */	0x40,		/* Oi2 Flags:  has ext, */
+			0x0,		/* 0 */
 /* 236 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
 /* 238 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 240 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 242 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Procedure Bochs_GetGPRs */
+
+
 	/* Parameter h1 */
 
-/* 244 */	NdrFcShort( 0xa112 ),	/* Flags:  must free, out, simple ref, srv alloc size=40 */
-/* 246 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 248 */	NdrFcShort( 0x12 ),	/* Type Offset=18 */
-
-	/* Parameter context */
-
-/* 250 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 244 */	0x0,		/* 0 */
+			0x48,		/* Old Flags:  */
+/* 246 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 250 */	NdrFcShort( 0x7 ),	/* 7 */
 /* 252 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 254 */	0x10,		/* FC_ERROR_STATUS_T */
+/* 254 */	0x32,		/* FC_BIND_PRIMITIVE */
 			0x0,		/* 0 */
+/* 256 */	NdrFcShort( 0x0 ),	/* x86 Stack size/offset = 0 */
+/* 258 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 260 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 262 */	0x41,		/* Oi2 Flags:  srv must size, has ext, */
+			0x1,		/* 1 */
+/* 264 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 266 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 268 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 270 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter h1 */
+
+/* 272 */	NdrFcShort( 0x113 ),	/* Flags:  must size, must free, out, simple ref, */
+/* 274 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 276 */	NdrFcShort( 0x12 ),	/* Type Offset=18 */
 
 			0x0
         }
@@ -452,28 +477,38 @@ static const BochsRpcDbg_MIDL_TYPE_FORMAT_STRING BochsRpcDbg__MIDL_TypeFormatStr
 /*  4 */	NdrFcShort( 0x1 ),	/* 1 */
 /*  6 */	0x29,		/* Corr desc:  parameter, FC_ULONG */
 			0x0,		/*  */
-/*  8 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/*  8 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 10 */	NdrFcShort( 0x1 ),	/* Corr flags:  early, */
 /* 12 */	0x1,		/* FC_BYTE */
 			0x5b,		/* FC_END */
 /* 14 */	
-			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
+			0x11, 0x0,	/* FC_RP */
 /* 16 */	NdrFcShort( 0x2 ),	/* Offset= 2 (18) */
 /* 18 */	
-			0x15,		/* FC_STRUCT */
-			0x3,		/* 3 */
-/* 20 */	NdrFcShort( 0x28 ),	/* 40 */
-/* 22 */	0x8,		/* FC_LONG */
+			0x1a,		/* FC_BOGUS_STRUCT */
+			0x7,		/* 7 */
+/* 20 */	NdrFcShort( 0x90 ),	/* 144 */
+/* 22 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 24 */	NdrFcShort( 0x0 ),	/* Offset= 0 (24) */
+/* 26 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 28 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 30 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 32 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 34 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 36 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 38 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 40 */	0xb,		/* FC_HYPER */
+			0xb,		/* FC_HYPER */
+/* 42 */	0xb,		/* FC_HYPER */
 			0x8,		/* FC_LONG */
-/* 24 */	0x8,		/* FC_LONG */
-			0x8,		/* FC_LONG */
-/* 26 */	0x8,		/* FC_LONG */
-			0x8,		/* FC_LONG */
-/* 28 */	0x8,		/* FC_LONG */
-			0x8,		/* FC_LONG */
-/* 30 */	0x8,		/* FC_LONG */
-			0x8,		/* FC_LONG */
-/* 32 */	0x5c,		/* FC_PAD */
+/* 44 */	0x40,		/* FC_STRUCTPAD4 */
 			0x5b,		/* FC_END */
 
 			0x0
@@ -488,7 +523,8 @@ static const unsigned short BochsDebug_FormatStringOffsetTable[] =
     84,
     136,
     188,
-    216
+    216,
+    244
     };
 
 
