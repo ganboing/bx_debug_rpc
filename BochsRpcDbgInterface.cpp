@@ -1,16 +1,9 @@
 //MUST!! be compiled with /EHa
 
 #include "BochsRpcShared.h"
-#include "rpc_gen/BochsRpcDbg.h"
-#include "bx_rpc_bridging.h"
+#include "bxversion.h"
 
 typedef void(*pNoWaitRpcJob)();
-
-/*void Bochs_QuitSimulationImpl(PVOID, HANDLE hEvent)
-{
-bx_rpc_server->Stop();
-SetEvent(hEvent);
-}*/
 
 template<pNoWaitRpcJob pJob>
 struct BochsNoWaitJobs{
@@ -34,7 +27,7 @@ void AddBochsJobNoWait()
 {
 	if (!bx_rpc_server->Enqueue(&BochsNoWaitJobs<pJob>::Job))
 	{
-		RaiseException(RPC_S_CALL_FAILED, EXCEPTION_NONCONTINUABLE, NULL, NULL);
+		RaiseException(RPC_S_SERVER_UNAVAILABLE, EXCEPTION_NONCONTINUABLE, NULL, NULL);
 	}
 }
 
@@ -48,32 +41,43 @@ void AddBochsJobWait(const F& job)
 			j();
 			SetEvent(Event.get());
 		}
-		virtual void Cancel() const{
-			cancelled = true;
-			SetEvent(Event.get());
-		}
-		_NewItem(const F& _j) : j(_j)
+		_NewItem(HANDLE _Event, const F& _j) 
+			:BochsRpcJobWaitItem(_Event), j(_j)
 		{}
 	};
-	const _NewItem NewItem(job);
+	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (!hEvent)
+	{
+		RaiseException(RPC_S_OUT_OF_RESOURCES, EXCEPTION_NONCONTINUABLE, NULL, NULL);
+	}
+	const _NewItem NewItem(hEvent, job);
 	if (!bx_rpc_server->Enqueue(&NewItem))
 	{
-		RaiseException(RPC_S_CALL_FAILED, EXCEPTION_NONCONTINUABLE, NULL, NULL);
+		RaiseException(RPC_S_SERVER_UNAVAILABLE, EXCEPTION_NONCONTINUABLE, NULL, NULL);
 	}
 	//wait for the operation to complete
 	WaitForSingleObject(NewItem.Event.get(), INFINITE);
 	if (NewItem.cancelled)
 	{
-		//raise if canceled
+		//raise if cancelled
 		RaiseException(RPC_S_CALL_CANCELLED, EXCEPTION_NONCONTINUABLE, NULL, NULL);
 	}
 }
 
 extern "C"{
 
+	char* Bochs_GetVersion(IN RPC_BINDING_HANDLE h1)
+	{
+		char* buf = (char*)midl_user_allocate(sizeof(VER_STRING));
+		strcpy(buf, VER_STRING);
+		return buf;
+	}
+
 	void Bochs_QuitSimulation(IN RPC_BINDING_HANDLE h1)
 	{
-
+		bx_rpc_server->Stop();
+		bx_debug_break();
+		//break the main loop
 	}
 
 	void Bochs_PauseSimulation(IN RPC_BINDING_HANDLE h1)

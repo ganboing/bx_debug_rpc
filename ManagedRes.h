@@ -1,13 +1,26 @@
 #pragma once
 #include <Windows.h>
 #include <memory>
+#include <stdexcept>
 
+template<decltype(CloseHandle) D>
 class _HANDLE_Deleter{
 public:
-	inline void operator() (void* p)
+	inline void operator() (HANDLE p)
 	{
-		CloseHandle(p);
+		D(p);
 	}
 };
 
-typedef ::std::unique_ptr<void, _HANDLE_Deleter> ManagedHANDLE;
+//The default dtor is CloseHandle
+template<decltype(CloseHandle) D = CloseHandle>
+using ManagedHANDLE = ::std::unique_ptr < void, _HANDLE_Deleter<D> > ;
+
+inline HANDLE CheckHandle(HANDLE h)
+{
+	if (h == NULL)
+	{
+		throw ::std::runtime_error("handle is null");
+	}
+	return h;
+}

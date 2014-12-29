@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Dec 26 22:15:00 2014
+/* at Mon Dec 29 23:32:08 2014
  */
 /* Compiler settings for C:\Users\PROGMAN\workspace\bochs_trunk\vs2013\\..\bx_debug_rpc\BochsRpcDbg.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -106,6 +106,9 @@ void Bochs_PrintRegs(
 void Bochs_GetGPRs( 
     /* [in] */ handle_t h1,
     /* [ref][out] */ PBochsGPRsContext context);
+
+/* [unique][string] */ char *Bochs_GetVersion( 
+    /* [in] */ handle_t h1);
 
 
 

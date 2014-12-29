@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Dec 26 22:15:00 2014
+/* at Mon Dec 29 23:32:08 2014
  */
 /* Compiler settings for C:\Users\PROGMAN\workspace\bochs_trunk\vs2013\\..\bx_debug_rpc\BochsRpcDbg.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -35,8 +35,8 @@
 
 #include "BochsRpcDbg.h"
 
-#define TYPE_FORMAT_STRING_SIZE   47                                
-#define PROC_FORMAT_STRING_SIZE   279                               
+#define TYPE_FORMAT_STRING_SIZE   51                                
+#define PROC_FORMAT_STRING_SIZE   313                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -200,6 +200,21 @@ void Bochs_GetGPRs(
                   ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
                   (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[244],
                   ( unsigned char * )&h1);
+    
+}
+
+
+/* [unique][string] */ char *Bochs_GetVersion( 
+    /* [in] */ handle_t h1)
+{
+
+    CLIENT_CALL_RETURN _RetVal;
+
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&BochsDebug_StubDesc,
+                  (PFORMAT_STRING) &BochsRpcDbg__MIDL_ProcFormatString.Format[278],
+                  ( unsigned char * )&h1);
+    return ( char * )_RetVal.Pointer;
     
 }
 
@@ -462,6 +477,35 @@ static const BochsRpcDbg_MIDL_PROC_FORMAT_STRING BochsRpcDbg__MIDL_ProcFormatStr
 /* 274 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 276 */	NdrFcShort( 0x12 ),	/* Type Offset=18 */
 
+	/* Procedure Bochs_GetVersion */
+
+
+	/* Parameter context */
+
+/* 278 */	0x0,		/* 0 */
+			0x48,		/* Old Flags:  */
+/* 280 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 284 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 286 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 288 */	0x32,		/* FC_BIND_PRIMITIVE */
+			0x0,		/* 0 */
+/* 290 */	NdrFcShort( 0x0 ),	/* x86 Stack size/offset = 0 */
+/* 292 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 294 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 296 */	0x45,		/* Oi2 Flags:  srv must size, has return, has ext, */
+			0x1,		/* 1 */
+/* 298 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 300 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 302 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 304 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter h1 */
+
+/* 306 */	NdrFcShort( 0x33 ),	/* Flags:  must size, must free, out, return, */
+/* 308 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 310 */	NdrFcShort( 0x2e ),	/* Type Offset=46 */
+
 			0x0
         }
     };
@@ -510,6 +554,11 @@ static const BochsRpcDbg_MIDL_TYPE_FORMAT_STRING BochsRpcDbg__MIDL_TypeFormatStr
 			0x8,		/* FC_LONG */
 /* 44 */	0x40,		/* FC_STRUCTPAD4 */
 			0x5b,		/* FC_END */
+/* 46 */	
+			0x12, 0x8,	/* FC_UP [simple_pointer] */
+/* 48 */	
+			0x22,		/* FC_C_CSTRING */
+			0x5c,		/* FC_PAD */
 
 			0x0
         }
@@ -524,7 +573,8 @@ static const unsigned short BochsDebug_FormatStringOffsetTable[] =
     136,
     188,
     216,
-    244
+    244,
+    278
     };
 
 

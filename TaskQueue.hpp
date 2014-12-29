@@ -17,6 +17,8 @@ private:
 	*/
 public:
 	TaskQueue()
+		:
+		p_reserve(0), p_commit(0), p_free(0)
 	{
 		::std::fill(data, data + S, nullptr);
 	}
@@ -43,8 +45,10 @@ public:
 		{
 			return nullptr;
 		}
+		T* ret = data[p_f];
+		data[p_f] = nullptr;
 		p_free.store((p_f + 1) % S);
-		return data[p_f];
+		return ret;
 	}
 };
 

@@ -14,4 +14,5 @@ boolean Bochs_ReadPhysicalMemory([in] handle_t h1, [in] unsigned __int64 StartAd
 void Bochs_WaitForIdle([in] handle_t h1);
 void Bochs_PrintRegs([in] handle_t h1);
 void Bochs_GetGPRs([in] handle_t h1, [out, ref] PBochsGPRsContext context);
+[string, unique] char* Bochs_GetVersion([in] handle_t h1);
 }
