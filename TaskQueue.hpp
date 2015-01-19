@@ -1,7 +1,6 @@
 #pragma once
 #include <atomic>
 #include <algorithm>
-//#include <mutex>
 
 template<class T, size_t S>
 class TaskQueue{
@@ -51,55 +50,3 @@ public:
 		return ret;
 	}
 };
-
-/*template<class T>
-class TaskQueue{
-private:
-	T*  head;
-	T** tail;
-	::std::atomic_bool shutdown;
-	::std::mutex mut;
-public:
-	typedef T ElementType, *PElementType;
-	TaskQueue()
-		: head(nullptr), tail(&head)
-	{
-	}
-	void Shutdown()
-	{
-		shutdown.store(true);
-	}
-	bool IsShutDown() const
-	{
-		return shutdown.load();
-	}
-	bool Enqueue(PElementType pElement)
-	{
-		if(!shutdown.load())
-		{
-			::std::lock_guard<::std::mutex> lock(mut);
-			*tail = pElement;
-			tail = &pElement->next;
-			return true;
-		}
-		return false;
-	}
-	PElementType Dequeue()
-	{
-		PElementType ret = nullptr;
-		::std::lock_guard<::std::mutex> lock(mut);
-		if(&head != tail)
-		{
-			ret = head;
-			if(tail == &head->next)
-			{
-				tail = &head;
-			}
-			else
-			{
-				head = head->next;
-			}
-		}
-		return ret;
-	}
-};*/
