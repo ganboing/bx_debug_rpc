@@ -218,7 +218,7 @@ static struct _BochsRpcInit
 	_BochsRpcInit()
 		:pBochsRpcServer(nullptr)
 	{
-		printf("bochs console HWND=%p\n", GetConsoleWindow());
+		//printf("bochs console HWND=%p\n", GetConsoleWindow());
 		char* rpc_name = FindAndRemoveArgv(
 			[](char* _para){return !strncmp(_para, RPC_PARA_PREFIX, sizeof(RPC_PARA_PREFIX) - 1); }
 			);

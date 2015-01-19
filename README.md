@@ -39,4 +39,9 @@ Note: The All-in-one script invoke these helper scripts above accordingly.
 
 Usage:
 
-//TODO
+The commandline of the RPC debugger version of bochs enables the following options to bochs
+	
+	-rpc:[%s] (Required): Specifies the server name string.
+	-rpc-debug (Optional): Enable debug messages.
+	-rpc-event=[%p] (Optional): Specifies the synchronization Event.
+
