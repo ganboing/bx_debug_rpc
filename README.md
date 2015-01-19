@@ -45,3 +45,6 @@ The commandline of the RPC debugger version of bochs enables the following optio
 	-rpc-debug (Optional): Enable debug messages.
 	-rpc-event=[%p] (Optional): Specifies the synchronization Event.
 
+A sample client program is included in bx_debug_rpc/bx_sample_client.
+
+TODO: design docs.
