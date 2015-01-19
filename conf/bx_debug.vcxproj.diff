@@ -1,0 +1,38 @@
+--- orig/bx_debug.vcxproj	Sat Jul 12 08:59:34 2014
++++ mod/bx_debug.vcxproj	Mon Jan 19 21:08:35 2015
+@@ -53,6 +53,9 @@
+     <BuildLog>
+       <Path>$(IntDir)BuildLog-$(TargetName).log</Path>
+     </BuildLog>
++    <PreBuildEvent>
++      <Command>midl /char ascii7 /out $(SolutionDir)\..\bx_debug_rpc\rpc_gen\ $(SolutionDir)\..\bx_debug_rpc\BochsRpcDbg.idl</Command>
++    </PreBuildEvent>
+     <ClCompile>
+       <Optimization>Disabled</Optimization>
+       <AdditionalIncludeDirectories>..;..\instrument\stubs;..\build\win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -83,6 +86,9 @@
+     <BuildLog>
+       <Path>$(IntDir)BuildLog-$(TargetName).log</Path>
+     </BuildLog>
++    <PreBuildEvent>
++      <Command>midl /char ascii7 /out $(SolutionDir)\..\bx_debug_rpc\rpc_gen\ $(SolutionDir)\..\bx_debug_rpc\BochsRpcDbg.idl</Command>
++    </PreBuildEvent>
+     <ClCompile>
+       <Optimization>MaxSpeed</Optimization>
+       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+@@ -125,6 +131,15 @@
+       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+     </ClCompile>
+     <ClCompile Include="..\bx_debug\symbols.cc" />
++    <ClCompile Include="..\bx_debug_rpc\BochsRpcDbgServer.cpp">
++      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Sync</ExceptionHandling>
++      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Sync</ExceptionHandling>
++    </ClCompile>
++    <ClCompile Include="..\bx_debug_rpc\BochsRpcDbgInterface.cpp">
++      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Async</ExceptionHandling>
++      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Async</ExceptionHandling>
++    </ClCompile>
++    <ClCompile Include="..\bx_debug_rpc\rpc_gen\BochsRpcDbg_s.c" />
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="..\bochs.h" />
