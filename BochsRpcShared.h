@@ -53,5 +53,5 @@ public:
 
 extern _BochsRpcServer*& bx_rpc_server;
 
-#include "rpc_gen/BochsRpcDbg.h"
+#include "BochsRpcDbg.h"
 #include "bx_rpc_bridging.h"
