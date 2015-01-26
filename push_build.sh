@@ -1,10 +1,10 @@
 #!/bin/sh
 dir=$(dirname "$0")
 remote=ganboing2@frs.sourceforge.net:/home/pfs/project/bochsrpcdebugger/build
-echo "build project"
+echo "build project using "$NUMBER_OF_PROCESSORS" cpus"
 pushd $dir/../vs2013
-MSBuild.exe bochs.vcxproj -p:Configuration=Debug -t:Build
-MSBuild.exe bochs.vcxproj -p:Configuration=Release -t:Build
+MSBuild.exe bochs.vcxproj -p:Configuration=Debug -t:Build -maxcpucount:$NUMBER_OF_PROCESSORS
+MSBuild.exe bochs.vcxproj -p:Configuration=Release -t:Build -maxcpucount:$NUMBER_OF_PROCESSORS
 popd
 echo "pushing to sf"
 scp $dir/../obj-debug/bochs.exe $remote/Debug/bochs.exe
