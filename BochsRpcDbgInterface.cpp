@@ -66,6 +66,11 @@ void AddBochsJobWait(const F& job)
 
 extern "C"{
 
+	unsigned int Bochs_GetProcessorCount(IN RPC_BINDING_HANDLE h1)
+	{
+		return bx_dbg_rpc_get_proc_cnt();
+	}
+
 	char* Bochs_GetVersion(IN RPC_BINDING_HANDLE h1)
 	{
 		char* buf = (char*)midl_user_allocate(sizeof(VER_STRING));
@@ -90,9 +95,11 @@ extern "C"{
 		AddBochsJobNoWait<bx_dbg_continue_command>();
 	}
 
-	void Bochs_PrintRegs(IN RPC_BINDING_HANDLE h1)
+	void Bochs_PrintRegs(IN RPC_BINDING_HANDLE h1, unsigned int iproc)
 	{
-		AddBochsJobNoWait<bx_dbg_rpc_print_reg>();
+		AddBochsJobWait(
+			[=]{bx_dbg_rpc_print_reg(iproc); }
+		);
 	}
 
 	void Bochs_WaitForIdle(IN RPC_BINDING_HANDLE h1)
@@ -102,25 +109,25 @@ extern "C"{
 		);
 	}
 
-	boolean Bochs_ReadLinearMemory(IN RPC_BINDING_HANDLE h1, unsigned __int64 StartAddr, unsigned __int32 Length, byte Buffer[]){
+	boolean Bochs_ReadLinearMemory(IN RPC_BINDING_HANDLE h1, unsigned int iproc, unsigned __int64 StartAddr, unsigned __int32 Length, byte Buffer[]){
 		boolean ret;
 		AddBochsJobWait(
-			[=, &ret]{ret = bx_dbg_rpc_read_linear(StartAddr, Length, Buffer); }
+			[=, &ret]{ret = bx_dbg_rpc_read_linear(iproc, StartAddr, Length, Buffer); }
 		);
 		return ret;
 	}
 
-	boolean Bochs_ReadPhysicalMemory(IN RPC_BINDING_HANDLE h1, unsigned __int64 StartAddr, unsigned __int32 Length, byte Buffer[]){
+	boolean Bochs_ReadPhysicalMemory(IN RPC_BINDING_HANDLE h1, unsigned int iproc, unsigned __int64 StartAddr, unsigned __int32 Length, byte Buffer[]){
 		boolean ret;
 		AddBochsJobWait(
-			[=, &ret]{ret = bx_dbg_rpc_read_physical(StartAddr, Length, Buffer); }
+			[=, &ret]{ret = bx_dbg_rpc_read_physical(iproc, StartAddr, Length, Buffer); }
 		);
 		return ret;
 	}
 
-	void Bochs_GetGPRs(IN RPC_BINDING_HANDLE h1, PBochsGPRsContext context){
+	void Bochs_GetGPRs(IN RPC_BINDING_HANDLE h1, unsigned int iproc, PBochsGPRsContext context){
 		AddBochsJobWait(
-			[=]{bx_dbg_rpc_read_gprs(context); }
+			[=]{bx_dbg_rpc_read_gprs(iproc, context); }
 		);
 	}
 }
