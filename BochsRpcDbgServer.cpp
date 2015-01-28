@@ -1,3 +1,5 @@
+#define _SCL_SECURE_NO_WARNINGS
+
 #include "BochsRpcShared.h"
 #include <Winternl.h>
 #include <cstdlib>
