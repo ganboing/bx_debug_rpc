@@ -1,5 +1,5 @@
 --- orig/bx_debug.vcxproj	Sat Jul 12 08:59:34 2014
-+++ mod/bx_debug.vcxproj	Mon Jan 26 07:22:39 2015
++++ mod/bx_debug.vcxproj	Sat Jan 31 16:35:55 2015
 @@ -44,10 +44,12 @@
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
      <OutDir>.\..\obj-debug\bx_debug\</OutDir>
@@ -13,7 +13,19 @@
    </PropertyGroup>
    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
      <BuildLog>
-@@ -125,6 +127,15 @@
+@@ -114,7 +116,10 @@
+     </Bscmake>
+   </ItemDefinitionGroup>
+   <ItemGroup>
+-    <ClCompile Include="..\bx_debug\dbg_main.cc" />
++    <ClCompile Include="..\bx_debug\dbg_main.cc">
++      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bx_debug_rpc\bx_debug_extra.cpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
++      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bx_debug_rpc\bx_debug_extra.cpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
++    </ClCompile>
+     <ClCompile Include="..\bx_debug\lexer.c">
+       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+@@ -125,6 +130,15 @@
        <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
      </ClCompile>
      <ClCompile Include="..\bx_debug\symbols.cc" />
@@ -29,7 +41,7 @@
    </ItemGroup>
    <ItemGroup>
      <ClInclude Include="..\bochs.h" />
-@@ -132,6 +143,18 @@
+@@ -132,6 +146,18 @@
      <ClInclude Include="..\bx_debug\debug.h" />
      <ClInclude Include="..\bx_debug\parser.h" />
      <ClInclude Include="..\bx_debug\syscalls-linux.h" />

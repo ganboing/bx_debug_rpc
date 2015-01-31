@@ -1,11 +1,15 @@
-#include "bochs.h"
-#include "cpu/cpu.h"
-#include "bx_debug/debug.h"
-#include "bx_debug_rpc/BochsRpcDataTypes.h"
+extern "C" {
+#include <signal.h>
+}
 
-#if BX_SUPPORT_SMP
-#error "Bochs should be configured in non-SMP mode to allow rpc debug"
-#endif
+#include "bochs.h"
+#include "param_names.h"
+#include "cpu/cpu.h"
+#include "iodev/iodev.h"
+
+#if BX_DEBUGGER
+
+#include "bx_debug_rpc/BochsRpcDataTypes.h"
 
 #if !BX_SUPPORT_X86_64
 #error "Currently rpc debug assumes x86_64 arch"
@@ -236,3 +240,28 @@ static void bx_print_msr_value()
 #undef MSR_NAME_MAX_STR
 #undef TOSTR
 #undef STR
+
+void bx_dbg_user_input_loop_iscall_void(void);
+
+void bx_dbg_user_input_loop_iscall_(void)
+{
+	if (bx_rpc_debugging)
+	{
+		for (;;) {
+			SIM->refresh_ci();
+			SIM->set_display_mode(DISP_MODE_CONFIG);
+			SIM->get_param_bool(BXPN_MOUSE_ENABLED)->set(0);
+			bx_rpc_get_command();
+		}
+	}
+	else
+	{
+		bx_dbg_user_input_loop_iscall_void();
+	}
+}
+
+#define bx_dbg_user_input_loop(...)  bx_dbg_user_input_loop_iscall_##__VA_ARGS__(__VA_ARGS__)
+
+#else
+#error "bochs_rpc_debugger requires internal debugger to be enabled"
+#endif
