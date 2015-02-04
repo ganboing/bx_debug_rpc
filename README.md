@@ -1,6 +1,7 @@
 Bochs RPC Debugger
 
 A modified bochs internal debugger to support debugging through RPC (Remote Procedure Call) on win32.
+Feature request & bugfix: ganboing@gmail.com. 
 
 Windows only (ver >= 5.1)
 The project is synced with bochs trunk. 
