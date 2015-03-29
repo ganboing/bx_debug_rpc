@@ -3,7 +3,7 @@
 #include <set>
 #include <Windows.h>
 #include "ManagedRes.h"
-#include "TaskQueue.hpp"
+#include "TaskPtrQueue.hpp"
 
 #pragma comment(lib, "rpcrt4")
 
@@ -53,5 +53,9 @@ public:
 
 extern _BochsRpcServer*& bx_rpc_server;
 
-#include "BochsRpcDbg.h"
+#ifdef _DEBUG
+#include "rpc_gen/Debug/BochsRpcDbg.h"
+#else
+#include "rpc_gen/Release/BochsRpcDbg.h"
+#endif
 #include "bx_rpc_bridging.h"
