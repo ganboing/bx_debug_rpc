@@ -1,6 +1,6 @@
-diff -ur bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bochs.vcxproj bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bochs.vcxproj
---- bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bochs.vcxproj	Fri Jul 11 13:08:06 2014
-+++ bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bochs.vcxproj	Mon Mar 23 00:03:58 2015
+diff -ur bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bochs.vcxproj bx_debug_rpc/conf/../../vs2013/bochs.vcxproj
+--- bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bochs.vcxproj	Fri Jul 11 13:08:06 2014
++++ bx_debug_rpc/conf/../../vs2013/bochs.vcxproj	Mon Mar 23 00:03:58 2015
 @@ -51,6 +51,7 @@
      <OutDir>.\..\obj-release\</OutDir>
      <IntDir>.\..\obj-release\</IntDir>
@@ -9,9 +9,9 @@ diff -ur bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bochs.vcxproj bo
    </PropertyGroup>
    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
      <BuildLog>
-diff -ur bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bx_debug.vcxproj bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bx_debug.vcxproj
---- bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bx_debug.vcxproj	Sat Jul 12 08:59:34 2014
-+++ bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bx_debug.vcxproj	Sat Mar 28 20:43:55 2015
+diff -ur bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bx_debug.vcxproj bx_debug_rpc/conf/../../vs2013/bx_debug.vcxproj
+--- bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bx_debug.vcxproj	Sat Jul 12 08:59:34 2014
++++ bx_debug_rpc/conf/../../vs2013/bx_debug.vcxproj	Sat Mar 28 20:43:55 2015
 @@ -114,7 +114,10 @@
      </Bscmake>
    </ItemDefinitionGroup>
@@ -67,9 +67,9 @@ diff -ur bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bx_debug.vcxproj
    </ItemGroup>
    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
    <ImportGroup Label="ExtensionTargets">
-diff -ur bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bximage.vcxproj bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bximage.vcxproj
---- bochs_rpc_debug/bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bximage.vcxproj	Sat Jul 12 09:27:00 2014
-+++ bochs_rpc_debug/bx_debug_rpc/conf/../../vs2013/bximage.vcxproj	Sun Mar 29 23:36:05 2015
+diff -ur bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bximage.vcxproj bx_debug_rpc/conf/../../vs2013/bximage.vcxproj
+--- bx_debug_rpc/conf/vs2013_wk_tmp/vs2013/bximage.vcxproj	Sat Jul 12 09:27:00 2014
++++ bx_debug_rpc/conf/../../vs2013/bximage.vcxproj	Sun Mar 29 23:36:05 2015
 @@ -135,6 +135,7 @@
      </Bscmake>
    </ItemDefinitionGroup>
