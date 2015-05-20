@@ -1,7 +1,5 @@
-extern "C" {
-#include <signal.h>
-}
 
+#include <signal.h>
 #include "bochs.h"
 #include "param_names.h"
 #include "cpu/cpu.h"
@@ -241,27 +239,17 @@ static void bx_print_msr_value()
 #undef TOSTR
 #undef STR
 
-void bx_dbg_user_input_loop_iscall_void(void);
-
-void bx_dbg_user_input_loop_iscall_(void)
+void bx_dbg_rpc_input_loop(void)
 {
-	if (bx_rpc_debugging)
-	{
-		for (;;) {
-			SIM->refresh_ci();
-			SIM->set_display_mode(DISP_MODE_CONFIG);
-			SIM->get_param_bool(BXPN_MOUSE_ENABLED)->set(0);
-			bx_rpc_get_command();
-		}
-	}
-	else
-	{
-		bx_dbg_user_input_loop_iscall_void();
+	for (;;) {
+		SIM->refresh_ci();
+		SIM->set_display_mode(DISP_MODE_CONFIG);
+		SIM->get_param_bool(BXPN_MOUSE_ENABLED)->set(0);
+		bx_rpc_get_command();
 	}
 }
 
-#define bx_dbg_user_input_loop(...)  bx_dbg_user_input_loop_iscall_##__VA_ARGS__(__VA_ARGS__)
 
 #else
-#error "bochs_rpc_debugger requires internal debugger to be enabled"
+#pragma message("bochs_rpc_debugger will not be available without internal debugger")
 #endif

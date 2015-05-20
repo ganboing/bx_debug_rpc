@@ -1,16 +1,23 @@
 #define _SCL_SECURE_NO_WARNINGS
 
-#include "BochsRpcShared.h"
-#include <Winternl.h>
+#include <newstd.h>
 #include <cstdlib>
 #include <stdexcept>
 #include <algorithm>
 #include <string>
 #include <sstream>
+#include "BochsRpcShared.h"
+
+GEN_WINAPI_EH_STATUS(RPC_S_OK, RpcServerUseProtseqEp);
+GEN_WINAPI_EH_STATUS(RPC_S_OK, RpcServerRegisterIf);
+GEN_WINAPI_EH_RESULT(NULL, CreateThread);
+GEN_WINAPI_EH_RESULT(NULL, HeapCreate);
+GEN_WINAPI_EH_RESULT(NULL, CreateEvent);
+GEN_WINAPI_EH_RESULT(0, SetEvent);
 
 bool bx_rpc_debugging;
 
-DWORD WINAPI _BochsRpcServer::RpcListeningThread(LPVOID pthis)
+DWORD WINAPI _BochsRpcServer::RpcListeningThreadProc(LPVOID pthis)
 {
 	_BochsRpcServer* _this = reinterpret_cast<_BochsRpcServer*>(pthis);
 	RPC_STATUS ret = RpcServerListen(1, RPC_C_LISTEN_MAX_CALLS_DEFAULT, 0);
@@ -18,40 +25,37 @@ DWORD WINAPI _BochsRpcServer::RpcListeningThread(LPVOID pthis)
 	//check if the heap is in a valid status and all memory allocated are freed
 	return ret;
 }
-HANDLE _BochsRpcServer::Start(const char* name)
+ManagedHANDLE _BochsRpcServer::StartRpcListenThread(const char* name)
 {
-	char AddressBuilder[MAX_PATH];
-	sprintf(AddressBuilder, "Bochs_Debug_Port_%s", name);
-	printf("Bochs Rpc Debugger tries to listen on %s\n", AddressBuilder);
-	RPC_STATUS ret;
-	ret = RpcServerUseProtseqEp((unsigned char*)"ncalrpc", RPC_C_LISTEN_MAX_CALLS_DEFAULT, (unsigned char*)AddressBuilder, NULL);
-	if (ret != RPC_S_OK)
-	{
-		throw ::std::runtime_error("RpcServerUseProtseqEp failed");
-	}
-	ret = RpcServerRegisterIf(BochsDebug_v1_0_s_ifspec, NULL, NULL);
-	if (ret != RPC_S_OK)
-	{
-		throw ::std::runtime_error("RpcServerRegisterIf failed");
-	}
-	HANDLE hthread;
-	if (!(hthread = CreateThread(NULL, 0, RpcListeningThread, this, 0, NULL)))
-	{
-		throw ::std::runtime_error("create Rpc thread failed");
-	}
-	printf("Bochs Rpc Debugger Init succeed\n");
+	auto& addr_format = "Bochs_Debug_Port_%s";
+	auto len = _snprintf(nullptr, 0, addr_format, name);
+	auto addr_buf = (char*)_alloca(len + 1);
+
+	auto ret_len = _snprintf(addr_buf, len + 1, addr_format, name);
+	assert(ret_len == len);
+
+	printf("Bochs Rpc Debugger tries to listen on %s\n", addr_buf);
+	
+	EH_RpcServerUseProtseqEp((unsigned char*)"ncalrpc", RPC_C_LISTEN_MAX_CALLS_DEFAULT, (unsigned char*)addr_buf, NULL);
+	printf("\t RpcServerUseProtseqEp: OK\n");
+	
+	EH_RpcServerRegisterIf(BochsDebug_v1_0_s_ifspec, NULL, NULL);
+	printf("\t RpcServerRegisterIf: OK\n");
+
+	ManagedHANDLE hthread(EH_CreateThread(NULL, 0, RpcListeningThreadProc, this, CREATE_SUSPENDED, NULL));
+	printf("\t Rpc Listening thread created\n");
 	return hthread;
 }
 _BochsRpcServer::_BochsRpcServer(const char* name, bool _debug)
 	:
 	debug_heap(_debug),
 	server_shutdown(false),
-	RpcDataHeap(CheckHandle(HeapCreate(_debug ? HEAP_NO_SERIALIZE:0, 0, 0))),
-	WorkingItemReadyEvent(CheckHandle(CreateEvent(NULL, FALSE, FALSE, NULL))),
-	hRpcListeningThread(Start(name))
+	RpcDataHeap(EH_HeapCreate(_debug ? HEAP_NO_SERIALIZE:0, 0, 0)),
+	WorkingItemReadyEvent(EH_CreateEvent(NULL, FALSE, FALSE, NULL)),
+	hRpcListeningThread(StartRpcListenThread(name))
 {
-	bx_rpc_debugging = true;
 	printf("bochds-rpc: heap created [%p]\n", RpcDataHeap.get());
+	bx_rpc_debugging = true;
 }
 _BochsRpcServer::~_BochsRpcServer()
 {
@@ -202,9 +206,9 @@ BOOL WINAPI SetAndCloseEvent(HANDLE Event)
 static struct _BochsRpcInit
 {
 	template<typename F>
-	static char* FindAndRemoveArgv(const F& f)
+	static char* FindAndRemoveArgv(F&& f)
 	{
-		char** p_para = ::std::find_if(__argv, __argv + __argc, f);
+		char** p_para = ::std::find_if(__argv, __argv + __argc, std::forward<F>(f));
 		char* ret = nullptr;
 		if (p_para != __argv + __argc)
 		{
@@ -216,9 +220,8 @@ static struct _BochsRpcInit
 		return ret;
 	}
 
-	_BochsRpcServer* pBochsRpcServer;
+	std::unique_ptr<_BochsRpcServer> pBochsRpcServer;
 	_BochsRpcInit()
-		:pBochsRpcServer(nullptr)
 	{
 		//printf("bochs console HWND=%p\n", GetConsoleWindow());
 		char* rpc_name = FindAndRemoveArgv(
@@ -242,22 +245,22 @@ static struct _BochsRpcInit
 			{
 				printf("bochs-rpc: rpc notify parent\n");
 			}
-			ManagedHANDLE<SetAndCloseEvent> parent_event(rpc_parent_ctrl);
+			ManagedHANDLE parent_event(rpc_parent_ctrl);
 			try{
-				pBochsRpcServer = new _BochsRpcServer(rpc_name, rpc_debug);
+				pBochsRpcServer.reset(new _BochsRpcServer(rpc_name, rpc_debug));
 			}
 			catch (::std::exception& e){
 				printf("bochs-rpc: RpcServer startup failed, err=%s\n", e.what());
 			}
+			catch (DWORD& err){
+				printf("bochs-rpc: RpcServer startup failed, err=%lX\n", (unsigned long)err);
+			}
+			EH_SetEvent(rpc_parent_ctrl);
 		}
-	}
-	~_BochsRpcInit()
-	{
-		delete pBochsRpcServer;
 	}
 }BochsRpcInit;
 
-_BochsRpcServer*& bx_rpc_server = BochsRpcInit.pBochsRpcServer;
+_BochsRpcServer* bx_rpc_server = BochsRpcInit.pBochsRpcServer.get();
 
 void bx_rpc_get_command(void)
 {
